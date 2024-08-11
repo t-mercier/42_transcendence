@@ -58,6 +58,15 @@ export class UserService {
       .execute();
   }
 
+  async deleteUser(login: string): Promise<boolean> {
+    const user = await this.usersRepository.findOne({ where: { login } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    await this.usersRepository.delete({ login });
+    return true;
+  }
+
   async enableTwoFA(login: string, base32: string): Promise<User> {
     const user = await this.usersRepository.findOne({
       where: { login },

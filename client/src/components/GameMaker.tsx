@@ -12,6 +12,7 @@ import {
   FormLabel,
   Radio,
   Button,
+  Typography,
 } from '@mui/material';
 
 const GameMaker = () => {
@@ -55,12 +56,42 @@ const GameMaker = () => {
       }
     }
   }
+
   return (
     <form onSubmit={submitHandler}>
-      <Box component="fieldset">
-        <legend>Create a game room to play PONG!</legend>
-        <FormControl onSubmit={submitHandler}>
-          <FormLabel id="game-type" sx={{ color: 'primary.main' }}>
+      <Box
+        component="fieldset"
+        sx={{
+          borderColor: '#00ff00',
+          padding: '1rem',
+          fontFamily: 'Fira Code, monospace',
+          color: '#00ff00',
+        }}
+      >
+        <Typography
+          component="legend"
+          sx={{
+            fontSize: '1.5rem',
+            fontWeight: 'bold',
+            color: '#00ff00',
+            marginBottom: '1rem',
+          }}
+        >
+          Create a game room to play PONG!
+        </Typography>
+        <FormControl
+          component="fieldset"
+          sx={{ fontFamily: 'Fira Code, monospace', color: '#00ff00' }}
+        >
+          <FormLabel
+            id="game-type"
+            sx={{
+              color: '#00ff00',
+              marginBottom: '0.5rem',
+              fontWeight: 'bold',
+              fontSize: '1.1rem',
+            }}
+          >
             Which version of PONG! do you want to play?
           </FormLabel>
           <RadioGroup
@@ -71,17 +102,38 @@ const GameMaker = () => {
           >
             <FormControlLabel
               value="Classic"
-              control={<Radio />}
-              label="PONG Classic!"
+              control={<Radio sx={{ color: '#00ff00' }} />}
+              label={
+                <Typography
+                  sx={{ color: '#00ff00', fontFamily: 'Fira Code, monospace' }}
+                >
+                  PONG Classic!
+                </Typography>
+              }
             />
             <FormControlLabel
               value="Self-balancing"
-              control={<Radio />}
-              label="Self-balancing PONG!"
+              control={<Radio sx={{ color: '#00ff00' }} />}
+              label={
+                <Typography
+                  sx={{ color: '#00ff00', fontFamily: 'Fira Code, monospace' }}
+                >
+                  Self-balancing PONG!
+                </Typography>
+              }
             />
           </RadioGroup>
 
-          <FormLabel id="public-private" sx={{ color: 'primary.main' }}>
+          <FormLabel
+            id="public-private"
+            sx={{
+              color: '#00ff00',
+              marginTop: '1rem',
+              marginBottom: '0.5rem',
+              fontWeight: 'bold',
+              fontSize: '1.1rem',
+            }}
+          >
             Public or Private?
           </FormLabel>
           <RadioGroup
@@ -92,16 +144,41 @@ const GameMaker = () => {
           >
             <FormControlLabel
               value="Public"
-              control={<Radio />}
-              label="Public - play PONG with strangers!"
+              control={<Radio sx={{ color: '#00ff00' }} />}
+              label={
+                <Typography
+                  sx={{ color: '#00ff00', fontFamily: 'Fira Code, monospace' }}
+                >
+                  Public - play PONG with strangers!
+                </Typography>
+              }
             />
             <FormControlLabel
               value="Private"
-              control={<Radio />}
-              label="Private - invite people to your game room!"
+              control={<Radio sx={{ color: '#00ff00' }} />}
+              label={
+                <Typography
+                  sx={{ color: '#00ff00', fontFamily: 'Fira Code, monospace' }}
+                >
+                  Private - invite people to your game room!
+                </Typography>
+              }
             />
           </RadioGroup>
-          <Button type="submit" value="Create Game!">
+          <Button
+            type="submit"
+            sx={{
+              marginTop: '1rem',
+              color: '#00ff00',
+              borderColor: '#00ff00',
+              fontFamily: 'Fira Code, monospace',
+              '&:hover': {
+                backgroundColor: '#00ff00',
+                color: '#1e1e1e',
+              },
+            }}
+            variant="outlined"
+          >
             Submit
           </Button>
         </FormControl>

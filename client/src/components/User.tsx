@@ -1,110 +1,40 @@
-import React, { useState, useEffect, createContext, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
-  Card,
-  Typography,
-  TextField,
-  Button,
   CircularProgress,
-  Avatar,
-  Switch,
-  FormControlLabel,
   Box,
+  TextField,
+  Link,
+  Modal,
+  Typography,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from '@mui/material';
 import qrcode from 'qrcode';
-import { API, getLogin } from '../util';
+import { API, getLogin, deleteCookie, logout } from '../util';
 
-// Authentication and User Context Setup
-const AuthContext = createContext<any>(null);
-
-const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within an AuthProvider');
-  return context;
-};
-
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!getLogin());
-  const [user, setUser] = useState<any>(null);
-
-  const login = () => {
-    // Logic for logging in (e.g., API call)
-    setIsLoggedIn(true);
-    // Update user data
-    setUser({ login: 'userLogin', displayName: 'User Display Name' });
-  };
-
-  const logout = () => {
-    // Logic for logging out (e.g., API call)
-    setIsLoggedIn(false);
-    setUser(null);
-  };
-
-  const updateUserImage = async (login: string, base64Image: string) => {
-    // Logic for updating user image (e.g., API call)
-    return { ...user, picture: base64Image }; // Mock response
-  };
-
-  const updateUser = async (login: string, data: { displayName: string }) => {
-    // Logic for updating user display name (e.g., API call)
-    return { ...user, displayName: data.displayName }; // Mock response
-  };
-
-  const enableTwoFA = async (login: string) => {
-    // Logic for enabling 2FA (e.g., API call)
-    return { secret: 'mockSecret', otpauthUrl: 'mockOtpAuthUrl' }; // Mock response
-  };
-
-  const disableTwoFA = async (login: string) => {
-    // Logic for disabling 2FA (e.g., API call)
-    return {}; // Mock response
-  };
-
-  return (
-    <AuthContext.Provider
-      value={{
-        isLoggedIn,
-        user,
-        login,
-        logout,
-        updateUserImage,
-        updateUser,
-        enableTwoFA,
-        disableTwoFA,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-// User Component
 const User: React.FC = () => {
   const { login: loginParam } = useParams<{ login: string }>();
-  const {
-    isLoggedIn,
-    user,
-    login,
-    logout,
-    updateUserImage,
-    updateUser,
-    enableTwoFA,
-    disableTwoFA,
-  } = useAuth();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!getLogin());
+  const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [userData, setUserData] = useState<any>(null);
-  const [newPicture, setNewPicture] = useState<File | null>(null);
+  const [editingUsername, setEditingUsername] = useState(false);
   const [newUsername, setNewUsername] = useState('');
   const [twoFAEnabled, setTwoFAEnabled] = useState(false);
   const [qrCode, setQrCode] = useState<string | null>(null);
+  const [showPicture, setShowPicture] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false); // State to manage dialog
+  const [newPicture, setNewPicture] = useState<File | null>(null); // State for new profile picture
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!isLoggedIn) {
-      navigate('/login'); // Redirect to login if not authenticated
+      navigate('/login');
     } else if (loginParam) {
       fetchUserData();
     }
@@ -127,14 +57,72 @@ const User: React.FC = () => {
     }
   };
 
+  const handleUsernameChange = async (
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (e.key === 'Enter' && newUsername) {
+      try {
+        const response = await fetch(`${API}/user/${userData.login}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ displayName: newUsername }),
+          credentials: 'include',
+        });
+
+        if (!response.ok) throw new Error('Failed to update username');
+
+        const updatedUser = await response.json();
+        setUserData(updatedUser); // Update local state with the response from the server
+        setEditingUsername(false);
+      } catch (error) {
+        setError('Failed to update username');
+      }
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      const response = await fetch(`${API}/user/${userData.login}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (!response.ok) throw new Error('Failed to delete account');
+
+      setIsLoggedIn(false);
+      setUserData(null);
+      logout();
+      deleteCookie('accessToken');
+
+      location.pathname = '/';
+    } catch (error) {
+      setError('Failed to delete account');
+    }
+  };
+
   const handleImageChange = async () => {
     if (!newPicture) return;
     const reader = new FileReader();
     reader.onloadend = async () => {
       const base64Image = reader.result as string;
       try {
-        const updatedUser = await updateUserImage(userData.login, base64Image);
-        setUserData(updatedUser);
+        const response = await fetch(`${API}/user/${userData.login}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ picture: base64Image }),
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to update image');
+        }
+
+        const updatedUser = await response.json();
+        setUserData(updatedUser); // Update local state with the response from the server
       } catch (error) {
         setError('Failed to update image');
       }
@@ -142,23 +130,9 @@ const User: React.FC = () => {
     reader.readAsDataURL(newPicture);
   };
 
-  const handleUsernameChange = async () => {
-    if (!newUsername) return;
-    try {
-      const updatedUser = await updateUser(userData.login, {
-        displayName: newUsername,
-      });
-      setUserData(updatedUser);
-    } catch (error) {
-      setError('Failed to update username');
-    }
-  };
-
-  const handleTwoFAToggle = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setTwoFAEnabled(event.target.checked);
-    if (event.target.checked) {
+  const handleTwoFAToggle = async () => {
+    setTwoFAEnabled(!twoFAEnabled);
+    if (!twoFAEnabled) {
       enableTwoFAForUser();
     } else {
       disableTwoFAForUser();
@@ -167,9 +141,20 @@ const User: React.FC = () => {
 
   const enableTwoFAForUser = async () => {
     try {
-      const response = await enableTwoFA(userData.login);
-      const qrCodeUrl = await qrcode.toDataURL(response.otpauthUrl);
+      const response = await fetch(`${API}/user/${userData.login}/2fa/enable`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) throw new Error('Failed to enable 2FA');
+
+      const data = await response.json();
+      const qrCodeUrl = await qrcode.toDataURL(data.otpauthUrl);
       setQrCode(qrCodeUrl);
+      setTwoFAEnabled(true);
     } catch (error) {
       setError('Failed to enable 2FA');
     }
@@ -177,8 +162,21 @@ const User: React.FC = () => {
 
   const disableTwoFAForUser = async () => {
     try {
-      await disableTwoFA(userData.login);
+      const response = await fetch(
+        `${API}/user/${userData.login}/2fa/disable`,
+        {
+          method: 'POST', // Using POST as per the backend method
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        },
+      );
+
+      if (!response.ok) throw new Error('Failed to disable 2FA');
+
       setQrCode(null);
+      setTwoFAEnabled(false);
     } catch (error) {
       setError('Failed to disable 2FA');
     }
@@ -186,102 +184,130 @@ const User: React.FC = () => {
 
   if (loading) return <CircularProgress />;
   if (error) return <Typography color="error">{error}</Typography>;
+  if (!userData) return null;
 
   return (
-    <Box>
-      <Card style={{ padding: '2rem', maxWidth: '400px', margin: '2rem auto' }}>
-        <Typography variant="h4" gutterBottom>
-          {isLoggedIn ? 'Profile' : 'Login'}
-        </Typography>
-
-        {!isLoggedIn && (
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={() => login()}
+    <Box
+      sx={{
+        padding: '2rem',
+        marginTop: '2rem',
+        marginLeft: '2rem',
+        fontFamily: 'Fira Code, monospace',
+        color: '#00ff00',
+      }}
+    >
+      <Box sx={{ marginBottom: '1rem' }}>
+        <span>'username'</span>
+        {editingUsername ? (
+          <TextField
+            variant="outlined"
+            size="small"
+            value={newUsername}
+            onChange={(e) => setNewUsername(e.target.value)}
+            onKeyDown={handleUsernameChange}
+            sx={{
+              marginLeft: '1rem',
+              backgroundColor: '#1e1e1e',
+              color: '#00ff00',
+            }}
+            inputProps={{
+              style: { color: '#00ff00', fontFamily: 'Fira Code, monospace' },
+            }}
+            autoFocus
+          />
+        ) : (
+          <Link
+            component="button"
+            onClick={() => setEditingUsername(true)}
+            sx={{ marginLeft: '1rem', color: '#00ff00' }}
           >
-            Login with 42 Intra
-          </Button>
+            {userData.displayName}
+          </Link>
         )}
+      </Box>
 
-        {isLoggedIn && userData && (
-          <Box>
-            <Avatar
-              src={userData.picture}
-              alt="Profile"
-              style={{ width: '100px', height: '100px' }}
+      <Box sx={{ marginBottom: '1rem' }}>
+        <span>'intra_login'</span> {userData.login}
+      </Box>
+
+      <Box sx={{ marginBottom: '1rem' }}>
+        <span>'profile picture'</span>
+        <Link
+          component="button"
+          onClick={() => setShowPicture(true)}
+          sx={{ marginLeft: '1rem', color: '#00ff00' }}
+        >
+          View Picture
+        </Link>
+        {getLogin() === userData.login && (
+          <Box sx={{ marginTop: '1rem' }}>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) =>
+                setNewPicture(e.target.files ? e.target.files[0] : null)
+              }
+              style={{ marginTop: '1rem' }}
             />
-            {getLogin() === loginParam && (
-              <>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) =>
-                    setNewPicture(e.target.files ? e.target.files[0] : null)
-                  }
-                  style={{ marginTop: '1rem' }}
-                />
-                <Button
-                  onClick={handleImageChange}
-                  disabled={!newPicture}
-                  style={{ marginTop: '1rem' }}
-                >
-                  Update Picture
-                </Button>
-              </>
-            )}
-
-            <Typography variant="h6">
-              Username: {userData.displayName}
-            </Typography>
-            <Typography variant="h6">Login: {userData.login}</Typography>
-
-            {getLogin() === loginParam && (
-              <>
-                <TextField
-                  label="New Username"
-                  value={newUsername}
-                  onChange={(e) => setNewUsername(e.target.value)}
-                  style={{ marginTop: '1rem' }}
-                />
-                <Button
-                  onClick={handleUsernameChange}
-                  disabled={!newUsername}
-                  style={{ marginTop: '1rem' }}
-                >
-                  Update Username
-                </Button>
-
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={twoFAEnabled}
-                      onChange={handleTwoFAToggle}
-                      name="twoFAEnabled"
-                      color="primary"
-                    />
-                  }
-                  label="Enable 2FA"
-                />
-
-                {qrCode && (
-                  <div style={{ marginTop: '1rem' }}>
-                    <Typography variant="h6">
-                      Scan this QR code with your authenticator app:
-                    </Typography>
-                    <img
-                      src={qrCode}
-                      alt="2FA QR Code"
-                      style={{ width: '200px', height: '200px' }}
-                    />
-                  </div>
-                )}
-              </>
-            )}
+            <Button
+              onClick={handleImageChange}
+              disabled={!newPicture}
+              sx={{
+                marginTop: '1rem',
+                color: '#00ff00',
+                borderColor: '#00ff00',
+              }}
+              variant="outlined"
+            >
+              Update Picture
+            </Button>
           </Box>
         )}
-      </Card>
+      </Box>
+
+      <Box sx={{ marginBottom: '1rem' }}>
+        <span>'enable 2fa'</span>
+        <Link
+          component="button"
+          onClick={handleTwoFAToggle}
+          sx={{ marginLeft: '1rem', color: '#00ff00' }}
+        >
+          {twoFAEnabled ? 'Disable 2FA' : 'Enable 2FA'}
+        </Link>
+        {twoFAEnabled && qrCode && (
+          <div style={{ marginTop: '1rem' }}>
+            <Typography variant="h6">
+              Scan this QR code with your authenticator app:
+            </Typography>
+            <img
+              src={qrCode}
+              alt="2FA QR Code"
+              style={{ width: '200px', height: '200px' }}
+            />
+          </div>
+        )}
+      </Box>
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <DialogTitle>Delete Account</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete your account? This action cannot be
+            undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleDeleteAccount}
+            color="secondary"
+            sx={{ backgroundColor: '#ff0000', color: '#fff' }}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

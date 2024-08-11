@@ -3,9 +3,10 @@ import React, { useEffect } from 'react';
 import { Link, Outlet, useNavigate, useSearchParams } from 'react-router-dom';
 import Col from './components/Col';
 import Row from './components/Row';
-import Status from './components/Status';
+import './css/index.css';
 import { API, getLogin } from './util';
 import InviteReceiver from './components/InviteReceiver';
+import { deleteCookie } from './util';
 
 const App: React.FC = () => {
   const navigate = useNavigate();
@@ -19,15 +20,12 @@ const App: React.FC = () => {
     location.href = API + `/auth/anon`;
   };
 
-  function deleteCookie(name: any) {
-    // Set the cookie with a past expiration date
-    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
-  }
 
   const logout = () => {
     deleteCookie('accessToken');
     location.pathname = '/';
   };
+    
   useEffect(() => {
     const token = query.get('token');
     if (token) {
@@ -61,7 +59,7 @@ const App: React.FC = () => {
                   </Link>
                 </>
               )}
-              <Status />
+              {/* <Status /> */}
             </Col>
           </Row>
         </header>

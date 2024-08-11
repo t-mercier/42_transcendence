@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   NotFoundException,
   Param,
@@ -52,7 +53,6 @@ export class UserController {
     @Body() updateUserDto: UserDto,
     @Req() req: Request & any,
   ): Promise<User> {
-    // const user = req.user;
     return await this.userService.update(login, updateUserDto);
   }
 
@@ -108,5 +108,16 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   async disableTwoFA(@Param('login') login: string): Promise<User> {
     return this.userService.disableTwoFA(login);
+  }
+    
+  @Delete(':login')
+  async deleteUser(@Param('login') login: string) {
+    const result = await this.userService.deleteUser(login);
+    if (!result) {
+      throw new NotFoundException('User not found');
+    }
+    return {
+      message: 'User deleted successfully',
+    };
   }
 }

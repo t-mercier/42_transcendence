@@ -1,52 +1,69 @@
-/* styles.css */
+/* global.css */
+body {
+  font-family: 'Fira Code', monospace;
+  font-size: 16px; /* Set your desired base font size */
+  color: #00ff00; /* Set your desired text color */
+  background-color: #1e1e1e; /* Set your desired background color */
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+}
 
-body, html {
-    background-color: #1e1e1e;
-    color: #00ff00;
-    font-family: 'Fira Code', 'Courier New', Courier, monospace;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .root {
-    background-color: #1e1e1e;
-    color: #00ff00;
-  }
-  
-  .full-width-header {
-    width: 100%;
-    background-color: #1e1e1e;
-    padding: 10px 20px;
-    box-sizing: border-box;
-  }
-  
-  .terminal-link {
-    color: #00ff00;
-    text-decoration: none;
-    font-family: 'Fira Code', 'Courier New', Courier, monospace;
-    margin-right: 15px;
-    display: inline-block;
-  }
-  
-  .terminal-link:hover {
-    text-decoration: underline;
-  }
-  
-  .page {
-    padding: 20px;
-  }
-  
-  .app {
-    width: 100%;
-    max-width: 1600px;
-    margin: 0 auto;
-  }
-  
-  a.terminal-link {
-    display: block;
-  }
-  
-  a.terminal-link:not(:last-child) {
-    margin-bottom: 10px;
-  }
-  
+/* Default link style */
+a {
+  color: #007700; /* Dark green link color */
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Style other elements like inputs, buttons, etc. */
+input,
+button,
+textarea,
+select {
+  font-family: 'Fira Code', monospace;
+  font-size: 16px; /* Match the base font size */
+  color: #00ff00;
+  background-color: #1e1e1e;
+  border: 1px solid #007700; /* Dark green border */
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Typography styles for consistency */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #00ff00;
+  font-family: 'Fira Code', monospace;
+}
+
+/* Override specific Material-UI components */
+.MuiTypography-root {
+  font-family: 'Fira Code', monospace !important;
+  color: #00ff00 !important;
+}
+
+.MuiLink-root {
+  color: #007700 !important; /* Dark green link color */
+  text-decoration: none;
+}
+
+.MuiLink-root:hover {
+  text-decoration: underline;
+}
+
+.MuiButton-root {
+  font-family: 'Fira Code', monospace !important;
+  color: #00ff00 !important;
+  background-color: #1e1e1e !important;
+  border: 1px solid #007700 !important;
+}

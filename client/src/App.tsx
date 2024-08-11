@@ -1,7 +1,6 @@
 import { Container } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import { Outlet, useNavigate, useSearchParams } from 'react-router-dom';
-import ButtonLogin from './components/ButtonLogin';
+import React, { useEffect } from 'react';
+import { Link, Outlet, useNavigate, useSearchParams } from 'react-router-dom';
 import Col from './components/Col';
 import Row from './components/Row';
 import Status from './components/Status';
@@ -38,20 +37,32 @@ const App: React.FC = () => {
   }, [navigate, query]);
 
   return (
-    <Container className="root" sx={{ maxWidth: '1600px!important' }}>
+    <Container className="root">
       <InviteReceiver />
       <Col className="app">
-        <header>
+        <header className="full-width-header">
           <Row>
-            {getLogin() ? (
-              <ButtonLogin onClick={logout} text="Log Out" />
-            ) : (
-              <>
-                <ButtonLogin onClick={handle42Login} text="Log In" />
-                <ButtonLogin onClick={anonlogin} text="anon Log In" />
-              </>
-            )}
-            <Status />
+            <Col>
+              {getLogin() ? (
+                <Link to="#" onClick={logout} className="terminal-link">
+                  Log Out
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    to="#"
+                    onClick={handle42Login}
+                    className="terminal-link"
+                  >
+                    Log In
+                  </Link>
+                  <Link to="#" onClick={anonlogin} className="terminal-link">
+                    anon Log In
+                  </Link>
+                </>
+              )}
+              <Status />
+            </Col>
           </Row>
         </header>
         <Col flexGrow={1} className="page">

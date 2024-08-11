@@ -1,7 +1,5 @@
-// User.tsx
-
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect, createContext, useContext } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   Card,
   Typography,
@@ -13,38 +11,112 @@ import {
   FormControlLabel,
   Box,
 } from '@mui/material';
-import { useAuth } from './AuthContext';
 import qrcode from 'qrcode';
 import { API, getLogin } from '../util';
-import Col from './Col';
 
+// Authentication and User Context Setup
+const AuthContext = createContext<any>(null);
+
+const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
+  return context;
+};
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!getLogin());
+  const [user, setUser] = useState<any>(null);
+
+  const login = () => {
+    // Logic for logging in (e.g., API call)
+    setIsLoggedIn(true);
+    // Update user data
+    setUser({ login: 'userLogin', displayName: 'User Display Name' });
+  };
+
+  const logout = () => {
+    // Logic for logging out (e.g., API call)
+    setIsLoggedIn(false);
+    setUser(null);
+  };
+
+  const updateUserImage = async (login: string, base64Image: string) => {
+    // Logic for updating user image (e.g., API call)
+    return { ...user, picture: base64Image }; // Mock response
+  };
+
+  const updateUser = async (login: string, data: { displayName: string }) => {
+    // Logic for updating user display name (e.g., API call)
+    return { ...user, displayName: data.displayName }; // Mock response
+  };
+
+  const enableTwoFA = async (login: string) => {
+    // Logic for enabling 2FA (e.g., API call)
+    return { secret: 'mockSecret', otpauthUrl: 'mockOtpAuthUrl' }; // Mock response
+  };
+
+  const disableTwoFA = async (login: string) => {
+    // Logic for disabling 2FA (e.g., API call)
+    return {}; // Mock response
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        isLoggedIn,
+        user,
+        login,
+        logout,
+        updateUserImage,
+        updateUser,
+        enableTwoFA,
+        disableTwoFA,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+// User Component
 const User: React.FC = () => {
-  const { login } = useParams<{ login: string }>();
-  const { user, updateUserImage, updateUser, enableTwoFA, disableTwoFA } =
-    useAuth();
-  const [userData, setUserData] = useState<any>(null);
+  const { login: loginParam } = useParams<{ login: string }>();
+  const {
+    isLoggedIn,
+    user,
+    login,
+    logout,
+    updateUserImage,
+    updateUser,
+    enableTwoFA,
+    disableTwoFA,
+  } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [userData, setUserData] = useState<any>(null);
   const [newPicture, setNewPicture] = useState<File | null>(null);
   const [newUsername, setNewUsername] = useState('');
   const [twoFAEnabled, setTwoFAEnabled] = useState(false);
   const [qrCode, setQrCode] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchUserData();
-  }, [login]);
+    if (!isLoggedIn) {
+      navigate('/login'); // Redirect to login if not authenticated
+    } else if (loginParam) {
+      fetchUserData();
+    }
+  }, [isLoggedIn, loginParam, navigate]);
 
   const fetchUserData = async () => {
     try {
-      const response = await fetch(`${API}/user/${login}`, {
+      const response = await fetch(`${API}/user/${loginParam}`, {
         method: 'GET',
         credentials: 'include',
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch user data');
-      }
-
+      if (!response.ok) throw new Error('Failed to fetch user data');
       const data = await response.json();
       setUserData(data);
       setTwoFAEnabled(data.isTwoFAEnabled);
@@ -116,77 +188,101 @@ const User: React.FC = () => {
   if (error) return <Typography color="error">{error}</Typography>;
 
   return (
-    <Col gap={'.2rem'} alignItems={'start'}>
-      <Avatar
-        src={userData.picture}
-        alt="Profile"
-        style={{ width: '100px', height: '100px' }}
-      />
-      {getLogin() == login && (
-        <>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) =>
-              setNewPicture(e.target.files ? e.target.files[0] : null)
-            }
-            style={{ marginTop: '1rem' }}
-          />
-          <Button
-            onClick={handleImageChange}
-            disabled={!newPicture}
-            style={{ marginTop: '1rem' }}
-          >
-            Update Picture
-          </Button>
-        </>
-      )}
+    <Box>
+      <Card style={{ padding: '2rem', maxWidth: '400px', margin: '2rem auto' }}>
+        <Typography variant="h4" gutterBottom>
+          {isLoggedIn ? 'Profile' : 'Login'}
+        </Typography>
 
-      <Typography variant="h6">Username: {userData.displayName}</Typography>
-      <Typography variant="h6">Login: {userData.login}</Typography>
-      {getLogin() == login && (
-        <>
-          <TextField
-            label="New Username"
-            value={newUsername}
-            onChange={(e) => setNewUsername(e.target.value)}
-            style={{ marginTop: '1rem' }}
-          />
+        {!isLoggedIn && (
           <Button
-            onClick={handleUsernameChange}
-            disabled={!newUsername}
-            style={{ marginTop: '1rem' }}
-          >
-            Update Username
-          </Button>
-
-        <FormControlLabel
-        control={
-          <Switch
-            checked={twoFAEnabled}
-            onChange={handleTwoFAToggle}
-            name="twoFAEnabled"
+            variant="contained"
             color="primary"
-          />
-        }
-        label="Enable 2FA"
-      />
+            fullWidth
+            onClick={() => login()}
+          >
+            Login with 42 Intra
+          </Button>
+        )}
 
-          {qrCode && (
-            <div style={{ marginTop: '1rem' }}>
-              <Typography variant="h6">
-                Scan this QR code with your authenticator app:
-              </Typography>
-              <img
-                src={qrCode}
-                alt="2FA QR Code"
-                style={{ width: '200px', height: '200px' }}
-              />
-            </div>
-          )}
-        </>
-      )}
-    </Col>
+        {isLoggedIn && userData && (
+          <Box>
+            <Avatar
+              src={userData.picture}
+              alt="Profile"
+              style={{ width: '100px', height: '100px' }}
+            />
+            {getLogin() === loginParam && (
+              <>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setNewPicture(e.target.files ? e.target.files[0] : null)
+                  }
+                  style={{ marginTop: '1rem' }}
+                />
+                <Button
+                  onClick={handleImageChange}
+                  disabled={!newPicture}
+                  style={{ marginTop: '1rem' }}
+                >
+                  Update Picture
+                </Button>
+              </>
+            )}
+
+            <Typography variant="h6">
+              Username: {userData.displayName}
+            </Typography>
+            <Typography variant="h6">Login: {userData.login}</Typography>
+
+            {getLogin() === loginParam && (
+              <>
+                <TextField
+                  label="New Username"
+                  value={newUsername}
+                  onChange={(e) => setNewUsername(e.target.value)}
+                  style={{ marginTop: '1rem' }}
+                />
+                <Button
+                  onClick={handleUsernameChange}
+                  disabled={!newUsername}
+                  style={{ marginTop: '1rem' }}
+                >
+                  Update Username
+                </Button>
+
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={twoFAEnabled}
+                      onChange={handleTwoFAToggle}
+                      name="twoFAEnabled"
+                      color="primary"
+                    />
+                  }
+                  label="Enable 2FA"
+                />
+
+                {qrCode && (
+                  <div style={{ marginTop: '1rem' }}>
+                    <Typography variant="h6">
+                      Scan this QR code with your authenticator app:
+                    </Typography>
+                    <img
+                      src={qrCode}
+                      alt="2FA QR Code"
+                      style={{ width: '200px', height: '200px' }}
+                    />
+                  </div>
+                )}
+              </>
+            )}
+          </Box>
+        )}
+      </Card>
+    </Box>
   );
 };
 

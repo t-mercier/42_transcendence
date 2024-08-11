@@ -11,7 +11,7 @@ import MatchHistoryPage from './pages/MatchHistoryPage.tsx';
 import RankingPage from './pages/RankingPage.tsx';
 import Profile from './pages/Profile.tsx';
 import TwoFAVerify from './pages/TwoFAVerify.tsx';
-import { AuthProvider } from './components/AuthContext.tsx';
+import { AuthProvider } from './components/User.tsx';
 
 const router = createBrowserRouter([
   {

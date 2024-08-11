@@ -1,5 +1,5 @@
 import { Container } from '@mui/material';
-import React, { useEffect,useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet, useNavigate, useSearchParams } from 'react-router-dom';
 import ButtonLogin from './components/ButtonLogin';
 import Col from './components/Col';
@@ -7,13 +7,10 @@ import Row from './components/Row';
 import Status from './components/Status';
 import { API, getLogin } from './util';
 import InviteReceiver from './components/InviteReceiver';
-import { useAuth } from './components/AuthContext';
 
 const App: React.FC = () => {
-    const navigate = useNavigate();
-    const [query] = useSearchParams();
-    const { setUser, user } = useAuth();
-  
+  const navigate = useNavigate();
+  const [query] = useSearchParams();
 
   const handle42Login = () => {
     window.location.href = API + '/auth/42';
@@ -23,28 +20,31 @@ const App: React.FC = () => {
     location.href = API + `/auth/anon`;
   };
 
-  const handleLogout = () => {
-    document.cookie = 'accessToken=; Max-Age=0';
-    setUser(null);
-    location.reload();
-  };
+  function deleteCookie(name: any) {
+    // Set the cookie with a past expiration date
+    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+  }
 
+  const logout = () => {
+    deleteCookie('accessToken');
+    location.pathname = '/';
+  };
   useEffect(() => {
     const token = query.get('token');
     if (token) {
       document.cookie = 'accessToken=' + token;
       location.search = '';
     }
-  }, [navigate, query, setUser]);
+  }, [navigate, query]);
 
   return (
-    <Container className="root" sx={{maxWidth: '1600px!important'}}>
+    <Container className="root" sx={{ maxWidth: '1600px!important' }}>
       <InviteReceiver />
       <Col className="app">
         <header>
-        <Row>
+          <Row>
             {getLogin() ? (
-              <ButtonLogin onClick={handleLogout} text="Log Out" />
+              <ButtonLogin onClick={logout} text="Log Out" />
             ) : (
               <>
                 <ButtonLogin onClick={handle42Login} text="Log In" />

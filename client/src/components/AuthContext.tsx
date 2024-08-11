@@ -33,8 +33,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     setIsLoggedIn(!!getLogin());
-}, []);
-
+  }, []);
 
   const login = () => {
     window.location.href = `${API}/auth/42`;
@@ -44,11 +43,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     // Set the cookie with a past expiration date
     document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
   }
-    
+
   const logout = () => {
-      setUser(null);
-      deleteCookie('accessToken');
-      location.reload();
+    deleteCookie('accessToken');
+    location.pathname = '/';
   };
 
   const updateUserImage = async (login: string, base64Image: string) => {

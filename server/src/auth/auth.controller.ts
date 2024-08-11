@@ -54,7 +54,7 @@ export class AuthController {
       req.headers.referer || `http://${this.config.get('HOST')}:5173`;
     const host = new URL(referer).hostname;
 
-    res.redirect(this.redir(host, accessToken, user.login));
+    res.redirect(await this.redir(host, accessToken, user.login));
   }
 
   private anonc = 0;

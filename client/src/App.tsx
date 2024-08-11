@@ -7,6 +7,7 @@ import Row from './components/Row';
 import Status from './components/Status';
 import { API, getLogin } from './util';
 import InviteReceiver from './components/InviteReceiver';
+import homeLogo from './assets/home-icon.svg';
 
 const App: React.FC = () => {
   const navigate = useNavigate();
@@ -43,6 +44,7 @@ const App: React.FC = () => {
       <Col className="app">
         <header>
           <Row>
+          <a href="/"><img src={homeLogo} alt=""/></a>
             {getLogin() ? (
               <ButtonLogin onClick={logout} text="Log Out" />
             ) : (

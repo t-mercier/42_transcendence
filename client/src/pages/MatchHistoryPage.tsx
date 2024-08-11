@@ -16,9 +16,6 @@ export default function MatchHistoryPage() {
 
   return (
     <Col>
-      <Link to={'/'}>
-        <p>Back to homepage</p>
-      </Link>
       <h1>Match History</h1>
       <MatchHistory filterUser={false}/>
     </Col>

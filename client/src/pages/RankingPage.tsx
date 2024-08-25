@@ -16,9 +16,6 @@ export default function RankingPage() {
 
   return (
     <Col>
-      <Link to={'/'}>
-        <p>Back to homepage</p>
-      </Link>
       <h1>Ranking</h1>
       <Ranking />
     </Col>

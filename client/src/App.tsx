@@ -7,6 +7,7 @@ import './css/index.css';
 import { API, getLogin } from './util';
 import InviteReceiver from './components/InviteReceiver';
 import { deleteCookie } from './util';
+import Status from './components/Status';
 
 const App: React.FC = () => {
   const navigate = useNavigate();
@@ -20,12 +21,11 @@ const App: React.FC = () => {
     location.href = API + `/auth/anon`;
   };
 
-
   const logout = () => {
     deleteCookie('accessToken');
     location.pathname = '/';
   };
-    
+
   useEffect(() => {
     const token = query.get('token');
     if (token) {
@@ -39,7 +39,8 @@ const App: React.FC = () => {
       <InviteReceiver />
       <Col className="app">
         <header className="full-width-header">
-          <Row>
+          <Row gap={'.5rem'}>
+            <Link to="/">Home</Link>
             <Col>
               {getLogin() ? (
                 <Link to="#" onClick={logout} className="terminal-link">
@@ -54,14 +55,14 @@ const App: React.FC = () => {
                   >
                     Log In
                   </Link>
-                  <Link to="#" onClick={anonlogin} className="terminal-link">
+                  {/* <Link to="#" onClick={anonlogin} className="terminal-link">
                     anon Log In
-                  </Link>
+                  </Link> */}
                 </>
               )}
-              {/* <Status /> */}
             </Col>
           </Row>
+          <Status />
         </header>
         <Col flexGrow={1} className="page">
           <Outlet />

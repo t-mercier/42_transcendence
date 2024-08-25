@@ -217,7 +217,7 @@ export default function Chat({ id }: { id: string }) {
   };
 
   const getcolor = (v: ChatServerMessage): string => {
-    return { admin: 'red', owner: 'purple', server: 'orange', user: 'black' }[
+    return { admin: 'red', owner: 'purple', server: 'orange', user: 'white' }[
       v.role
     ];
   };
@@ -248,7 +248,7 @@ export default function Chat({ id }: { id: string }) {
   };
 
   return (
-    <Row border={1} flexGrow={1}>
+    <Row border={1} flexGrow={1} minHeight={'500px'}>
       <Col flexGrow={1} padding={'.5rem'}>
         <h3>
           {user}@{room}

@@ -199,7 +199,7 @@ const User: React.FC = () => {
     >
       {currentLogin === loginParam && (
         <Box sx={{ marginBottom: '1rem' }}>
-          <span>'username'</span>
+          <span>username/</span>
           {editingUsername ? (
             <TextField
               variant="outlined"

@@ -68,17 +68,9 @@ const GameMaker = () => {
           color: '#00ff00',
         }}
       >
-        <Typography
-          component="legend"
-          sx={{
-            fontSize: '1.5rem',
-            fontWeight: 'bold',
-            color: '#00ff00',
-            marginBottom: '1rem',
-          }}
-        >
-          Create a game room to play PONG!
-        </Typography>
+        <h3>
+        ______ CREATE A GAME ROOM TO PLAY ______
+        </h3>
         <FormControl
           component="fieldset"
           sx={{ fontFamily: 'Fira Code, monospace', color: '#00ff00' }}
@@ -88,8 +80,6 @@ const GameMaker = () => {
             sx={{
               color: '#00ff00',
               marginBottom: '0.5rem',
-              fontWeight: 'bold',
-              fontSize: '1.1rem',
             }}
           >
             Which version of PONG! do you want to play?
@@ -130,8 +120,6 @@ const GameMaker = () => {
               color: '#00ff00',
               marginTop: '1rem',
               marginBottom: '0.5rem',
-              fontWeight: 'bold',
-              fontSize: '1.1rem',
             }}
           >
             Public or Private?

@@ -183,6 +183,8 @@ const User: React.FC = () => {
     }
   };
 
+  const currentLogin = getLogin();
+
   if (loading) return <CircularProgress />;
   if (error) return <Typography color="error">{error}</Typography>;
   if (!userData) return null;
@@ -190,45 +192,49 @@ const User: React.FC = () => {
   return (
     <Box
       sx={{
-        padding: '2rem',
         marginTop: '2rem',
-        marginLeft: '2rem',
         fontFamily: 'Fira Code, monospace',
         color: '#00ff00',
       }}
     >
+      {currentLogin === loginParam && (
+        <Box sx={{ marginBottom: '1rem' }}>
+          <span>'username'</span>
+          {editingUsername ? (
+            <TextField
+              variant="outlined"
+              size="small"
+              value={newUsername}
+              onChange={(e) => setNewUsername(e.target.value)}
+              onKeyDown={handleUsernameChange}
+              sx={{
+                marginLeft: '1rem',
+                backgroundColor: '#1e1e1e',
+                color: '#00ff00',
+              }}
+              inputProps={{
+                style: { color: '#00ff00', fontFamily: 'Fira Code, monospace' },
+              }}
+              autoFocus
+            />
+          ) : (
+            <Link
+              component="button"
+              onClick={() => setEditingUsername(true)}
+              sx={{ marginLeft: '1rem', color: '#00ff00' }}
+            >
+              {userData.displayName}
+            </Link>
+          )}
+        </Box>
+      )}
+      {currentLogin != loginParam && (
+        <Box sx={{ marginBottom: '1rem' }}>
+          <span>username/ </span> {userData.displayName}
+        </Box>
+      )}
       <Box sx={{ marginBottom: '1rem' }}>
-        <span>'username'</span>
-        {editingUsername ? (
-          <TextField
-            variant="outlined"
-            size="small"
-            value={newUsername}
-            onChange={(e) => setNewUsername(e.target.value)}
-            onKeyDown={handleUsernameChange}
-            sx={{
-              marginLeft: '1rem',
-              backgroundColor: '#1e1e1e',
-              color: '#00ff00',
-            }}
-            inputProps={{
-              style: { color: '#00ff00', fontFamily: 'Fira Code, monospace' },
-            }}
-            autoFocus
-          />
-        ) : (
-          <Link
-            component="button"
-            onClick={() => setEditingUsername(true)}
-            sx={{ marginLeft: '1rem', color: '#00ff00' }}
-          >
-            {userData.displayName}
-          </Link>
-        )}
-      </Box>
-
-      <Box sx={{ marginBottom: '1rem' }}>
-        <span>'intra_login'</span> {userData.login}
+        <span>intra_login/ </span> {userData.login}
       </Box>
 
       <Box>
@@ -237,68 +243,46 @@ const User: React.FC = () => {
           alt="Profile"
           style={{ width: '100px', height: '100px' }}
         />
-        <>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) =>
-              setNewPicture(e.target.files ? e.target.files[0] : null)
-            }
-            style={{ marginTop: '1rem' }}
-          />
-          <Button
-            onClick={handleImageChange}
-            disabled={!newPicture}
-            style={{ marginTop: '1rem' }}
-          >
-            Update Picture
-          </Button>
-        </>
-      </Box>
-
-      <Box sx={{ marginBottom: '1rem' }}>
-        <span>'enable 2fa'</span>
-        <Link
-          component="button"
-          onClick={handleTwoFAToggle}
-          sx={{ marginLeft: '1rem', color: '#00ff00' }}
-        >
-          {twoFAEnabled ? 'Disable 2FA' : 'Enable 2FA'}
-        </Link>
-        {twoFAEnabled && qrCode && (
-          <div style={{ marginTop: '1rem' }}>
-            <Typography variant="h6">
-              Scan this QR code with your authenticator app:
-            </Typography>
-            <img
-              src={qrCode}
-              alt="2FA QR Code"
-              style={{ width: '200px', height: '200px' }}
+        {currentLogin === loginParam && (
+          <>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) =>
+                setNewPicture(e.target.files ? e.target.files[0] : null)
+              }
+              style={{ marginTop: '1rem' }}
             />
-          </div>
+            <Button onClick={handleImageChange} disabled={!newPicture}>
+              Update Picture
+            </Button>
+          </>
         )}
       </Box>
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-        <DialogTitle>Delete Account</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete your account? This action cannot be
-            undone.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDialog(false)} color="primary">
-            Cancel
-          </Button>
-          <Button
-            onClick={handleDeleteAccount}
-            color="secondary"
-            sx={{ backgroundColor: '#ff0000', color: '#fff' }}
+      {currentLogin === loginParam && (
+        <Box sx={{ marginBottom: '2rem', marginTop: '2rem' }}>
+          <span>'enable 2fa'</span>
+          <Link
+            component="button"
+            onClick={handleTwoFAToggle}
+            sx={{ marginLeft: '1rem', color: '#00ff00' }}
           >
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+            {twoFAEnabled ? 'Disable 2FA' : 'Enable 2FA'}
+          </Link>
+          {twoFAEnabled && qrCode && (
+            <div style={{ marginTop: '1rem' }}>
+              <Typography variant="body2" sx={{ marginRight: 1 }}>
+                Scan this QR code with your authenticator app
+              </Typography>
+              <img
+                src={qrCode}
+                alt="2FA QR Code"
+                style={{ width: '100px', height: '100px', margin: '1rem' }}
+              />
+            </div>
+          )}
+        </Box>
+      )}
     </Box>
   );
 };

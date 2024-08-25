@@ -106,7 +106,7 @@ const MatchHistory = (props: { filterUser: boolean }) => {
   } else {
     return (
       <>
-        <Typography variant="h5">Match History</Typography>
+        <Typography variant="body2" sx={{ marginRight: 1 }}>Match History</Typography>
         <DataGrid
           rows={rows}
           columns={columns}

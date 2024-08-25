@@ -1,4 +1,4 @@
-import { Container } from '@mui/material';
+import { Box, Container } from '@mui/material';
 import React, { useEffect } from 'react';
 import { Link, Outlet, useNavigate, useSearchParams } from 'react-router-dom';
 import Col from './components/Col';
@@ -39,29 +39,25 @@ const App: React.FC = () => {
       <InviteReceiver />
       <Col className="app">
         <header className="full-width-header">
-          <Row gap={'.5rem'}>
-            <Link to="/">Home</Link>
-            <Col>
-              {getLogin() ? (
+          <Box sx={{ marginTop: '1rem', marginBottom: '1rem' }}>
+            <Link to="/">home/ </Link>
+            {getLogin() ? (
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <Link to="#" onClick={logout} className="terminal-link">
-                  Log Out
+                  log out/
                 </Link>
-              ) : (
-                <>
-                  <Link
-                    to="#"
-                    onClick={handle42Login}
-                    className="terminal-link"
-                  >
-                    Log In
-                  </Link>
-                  {/* <Link to="#" onClick={anonlogin} className="terminal-link">
+              </div>
+            ) : (
+              <>
+                <Link to="#" onClick={handle42Login} className="terminal-link">
+                  log in/
+                </Link>
+                {/* <Link to="#" onClick={anonlogin} className="terminal-link">
                     anon Log In
                   </Link> */}
-                </>
-              )}
-            </Col>
-          </Row>
+              </>
+            )}
+          </Box>
           <Status />
         </header>
         <Col flexGrow={1} className="page">

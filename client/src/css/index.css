@@ -23,12 +23,13 @@ body {
   }
   
   a:hover {
+    color: #0015ff; /* Dark green link color */
     text-decoration: underline;
   }
   
   /* Only necessary if you have non-MUI form elements */
   input,
-  button,
+  /* button, */
   textarea,
   select {
     font-size: 14px;

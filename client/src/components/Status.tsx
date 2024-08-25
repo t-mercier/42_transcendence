@@ -38,7 +38,7 @@ const Status = () => {
     <Row gap={'.5rem'}>
       {Array.from(status.entries()).map((v, i) => (
         <span key={i}>
-          <Link to={'/u/' + v[0]}>{v[0]}</Link> : {v[1]}
+          <Link to={'/u/' + v[0]}>{v[0]}</Link>/ {v[1]}
         </span>
       ))}
     </Row>

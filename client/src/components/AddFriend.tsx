@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { API, getLogin } from '../util';
 import { useParams } from 'react-router-dom';
 import Row from './Row';
@@ -17,11 +17,16 @@ const AddFriend = () => {
     setMsg(data.message);
   };
   return (
-    <Row>
-      <Button onClick={onclick}>Toggle Friend</Button>
-      <span>{msg}</span>
-    </Row>
+    <Box display="flex" alignItems="center">
+      <Button
+        onClick={onclick}
+        variant="outlined"
+        sx={{ color: '#00ff00', borderColor: '#00ff00' }}
+      >
+        Toggle Friend
+      </Button>
+      <span style={{ marginLeft: '8px', color: '#00ff00' }}>{msg}</span>
+    </Box>
   );
 };
-
 export default AddFriend;

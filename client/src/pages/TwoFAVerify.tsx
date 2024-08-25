@@ -1,13 +1,14 @@
-import { useState, FormEvent } from 'react';
 import { API } from '../util';
+import React, { useState, ChangeEvent, FormEvent, MouseEvent } from 'react';
 import { useParams } from 'react-router-dom';
+import { Box, Typography } from '@mui/material';
 
 export default function TwoFAVerify() {
   const [twoFAToken, setTwoFAToken] = useState('');
   const { login } = useParams<{ login: string }>();
 
   const handleVerificationSubmit = async (
-    event: FormEvent<HTMLFormElement>,
+    event: FormEvent<HTMLFormElement> | MouseEvent<HTMLAnchorElement>,
   ) => {
     event.preventDefault();
     const res = await fetch(`${API}/auth/${login}/${twoFAToken}/2fa/verify`, {
@@ -22,25 +23,55 @@ export default function TwoFAVerify() {
     }
   };
 
-  const verifcationOnChangeHandler = (event: FormEvent<HTMLInputElement>) => {
-    setTwoFAToken(event.currentTarget.value);
+  const verifcationOnChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    setTwoFAToken(event.target.value);
   };
 
   return (
     <>
-      <h2>2FA Verification Code for user {login}</h2>
-      <form onSubmit={handleVerificationSubmit}>
-        <label>
-          Verification Code:
-          <input
-            id="verification-code"
-            type="number"
-            value={twoFAToken}
-            onChange={verifcationOnChangeHandler}
-          />
-        </label>
-        <button type="submit">Submit</button>
-      </form>
+      <Typography variant="body2" gutterBottom>
+        user/ {login}
+      </Typography>
+      <Box
+        component="form"
+        onSubmit={handleVerificationSubmit}
+        display="flex"
+        alignItems="center"
+      >
+        <Typography variant="body2" sx={{ marginRight: 1 }}>
+          2FA code/
+        </Typography>
+        <input
+          id="verification-code"
+          type="text"
+          value={twoFAToken}
+          onChange={verifcationOnChangeHandler}
+          style={{
+            border: 'none',
+            borderBottom: '1px solid #00ff00',
+            width: '200px',
+            marginRight: '10px',
+            outline: 'none',
+            padding: '5px 0',
+          }}
+        />
+        <Typography
+          component="a"
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            handleVerificationSubmit(e);
+          }}
+          sx={{
+            cursor: 'pointer',
+            color: 'blue',
+            fontSize: '0.875rem', // Smaller font size (14px)
+            fontStyle: 'italic', // Italic style
+          }}
+        >
+          Submit
+        </Typography>
+      </Box>
     </>
   );
 }

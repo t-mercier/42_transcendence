@@ -1,69 +1,44 @@
 /* global.css */
 body {
-  font-family: 'Fira Code', monospace;
-  font-size: 16px; /* Set your desired base font size */
-  color: #00ff00; /* Set your desired text color */
-  background-color: #1e1e1e; /* Set your desired background color */
-  margin: 0;
-  padding: 0;
-  line-height: 1.5;
-}
-
-/* Default link style */
-a {
-  color: #007700; /* Dark green link color */
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-/* Style other elements like inputs, buttons, etc. */
-input,
-button,
-textarea,
-select {
-  font-family: 'Fira Code', monospace;
-  font-size: 16px; /* Match the base font size */
-  color: #00ff00;
-  background-color: #1e1e1e;
-  border: 1px solid #007700; /* Dark green border */
-}
-
-button {
-  cursor: pointer;
-}
-
-/* Typography styles for consistency */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: #00ff00;
-  font-family: 'Fira Code', monospace;
-}
-
-/* Override specific Material-UI components */
-.MuiTypography-root {
-  font-family: 'Fira Code', monospace !important;
-  color: #00ff00 !important;
-}
-
-.MuiLink-root {
-  color: #007700 !important; /* Dark green link color */
-  text-decoration: none;
-}
-
-.MuiLink-root:hover {
-  text-decoration: underline;
-}
-
-.MuiButton-root {
-  font-family: 'Fira Code', monospace !important;
-  color: #00ff00 !important;
-  background-color: #1e1e1e !important;
-  border: 1px solid #007700 !important;
-}
+    background-color: #1e1e1e; /* Background color */
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+    font-family: 'Fira Code', monospace; /* Consistent font family */
+    font-size: 14px; /* Base font size */
+    font-weight: 400; /* Ensure no bold text */
+    color: #00ff00; /* Text color */
+  }
+  
+  /* Ensure all text elements inherit the base font weight */
+  h1, h2, h3, h4, h5, h6, p, span, div, li, dt, dd, strong, b {
+    font-weight: 400 !important; /* Override bold text */
+  }
+  
+  /* Only necessary if you have non-MUI links */
+  a {
+    color: #007700; /* Dark green link color */
+    text-decoration: none;
+    font-weight: 400; /* Ensure no bold links */
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Only necessary if you have non-MUI form elements */
+  input,
+  button,
+  textarea,
+  select {
+    font-size: 14px;
+    color: #00ff00;
+    background-color: #1e1e1e;
+    border: 1px solid #007700; /* Dark green border */
+    font-weight: 400; /* Ensure no bold text in form elements */
+  }
+  
+  button {
+    cursor: pointer;
+  }
+  

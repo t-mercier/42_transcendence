@@ -4,7 +4,7 @@ import Col from './Col';
 import Row from './Row';
 import { getLogin } from '../util';
 import { useParams } from 'react-router-dom';
-import { Avatar, Button, Typography } from '@mui/material';
+import { Avatar, Box, Button, Typography } from '@mui/material';
 import { GameEventData, GameState, GameType } from '../GameCommon';
 import { socket } from '../game.socket';
 import { API } from '../util';
@@ -190,13 +190,22 @@ const Game = () => {
   }
 
   return (
-    <Col align-items="flex-start">
-      <Row>
-        <TableContainer component={Paper}>
+    <Box display="flex" flexDirection="column" alignItems="flex-start">
+      <Box display="flex" flexDirection="row" width="100%">
+        <TableContainer
+          component={Paper}
+          sx={{
+            backgroundColor: 'inherit', // Inherit the global background color
+            boxShadow: 'none', // Remove shadow if not needed
+            border: '1px solid #007700', // Optional: add border to match the theme
+          }}
+        >
           <Table aria-label="simple table" size="small">
             <TableBody>
               <TableRow>
-                <TableCell>Actions:</TableCell>
+                <TableCell>
+                  <Typography variant="body2" color="inherit">Actions:</Typography>
+                </TableCell>
                 <TableCell>
                   <JoinButton obj={buttonProps()} />
                   <LeaveButton obj={buttonProps()} />
@@ -204,24 +213,33 @@ const Game = () => {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>Game:</TableCell>
-                <TableCell sx={{ display: 'flex', justifyContent: 'left' }}>
-                  <Col sx={{ margin: '0 30px 0 8px' }}>{gameTypeStr}</Col>
-                  <Col sx={{ margin: '0 30px 0 0' }}>{publicOrPrivateStr}</Col>
-                  <Col sx={{ margin: '0 30px 0 0' }}>{gameStateString}</Col>
+                <TableCell>
+                  <Typography variant="body2" color="inherit">Game:</Typography>
+                </TableCell>
+                <TableCell sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+                  <Box sx={{ margin: '0 30px 0 8px' }}>
+                    <Typography variant="body2" color="inherit">{gameTypeStr}</Typography>
+                  </Box>
+                  <Box sx={{ margin: '0 30px 0 0' }}>
+                    <Typography variant="body2" color="inherit">{publicOrPrivateStr}</Typography>
+                  </Box>
+                  <Box sx={{ margin: '0 30px 0 0' }}>
+                    <Typography variant="body2" color="inherit">{gameStateString}</Typography>
+                  </Box>
                 </TableCell>
               </TableRow>
             </TableBody>
           </Table>
         </TableContainer>
-      </Row>
+      </Box>
 
-      <Row
+      <Box
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
           padding: '30px',
           alignItems: 'center',
+          width: '100%',
         }}
       >
         <GameAvatar userData={userDataA} />
@@ -234,14 +252,15 @@ const Game = () => {
           {scoreAstate.toString()} - {scoreBstate.toString()}
         </Typography>
         <GameAvatar userData={userDataB} />
-      </Row>
+      </Box>
 
       <canvas
         ref={cr}
         width={GameClient.W * scaleFactor}
         height={GameClient.H * scaleFactor}
+        style={{ display: 'block', margin: 'auto' }}
       ></canvas>
-    </Col>
+    </Box>
   );
 };
 

@@ -1,5 +1,7 @@
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { Link } from '@mui/material';
 import { useEffect, useState } from 'react';
+
 
 interface UserDTO {
   id: number;
@@ -16,6 +18,7 @@ interface UserDTO {
 interface TableRowData {
   rank: number;
   username: string;
+  viewProfile: string;
   winPercentage: number;
   wins: number;
   losses: number;
@@ -24,13 +27,14 @@ interface TableRowData {
 function createRowData(rec: UserDTO): TableRowData {
   const rank: number = 0; // temp value
   const username: string = rec.displayName;
+  const viewProfile: string = rec.login;
   const winPercentage: number =
     rec.won + rec.lost != 0
       ? Math.floor((100 * rec.won) / (rec.won + rec.lost))
       : 0;
   const wins: number = rec.won;
   const losses: number = rec.lost;
-  return { rank, username, winPercentage, wins, losses };
+  return { rank, username, viewProfile, winPercentage, wins, losses };
 }
 
 function calcRanking(rows: TableRowData[]) {
@@ -79,6 +83,9 @@ const Ranking = () => {
   const columns: GridColDef[] = [
     { field: 'rank', headerName: 'Rank', type: 'number', width: 70 },
     { field: 'username', headerName: 'username', width: 100 },
+    { field: 'viewProfile', headerName: 'Profile', width: 100, renderCell: (params) => (
+      <Link href={`/u/${params.value}`}>profile</Link>
+    ) },
     {
       field: 'winPercentage',
       headerName: 'win percentage',

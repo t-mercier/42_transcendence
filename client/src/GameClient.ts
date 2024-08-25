@@ -4,8 +4,8 @@ import { socket } from './game.socket';
 export default class GameClient extends GameCommon {
   ctx!: CanvasRenderingContext2D;
   keys = {
-    w: false,
-    s: false,
+    ArrowUp: false,
+    ArrowDown: false,
   };
   evdown!: (e: KeyboardEvent) => void;
   evup!: (e: KeyboardEvent) => void;

@@ -13,6 +13,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Avatar,
 } from '@mui/material';
 import qrcode from 'qrcode';
 import { API, getLogin, deleteCookie, logout } from '../util';
@@ -230,39 +231,29 @@ const User: React.FC = () => {
         <span>'intra_login'</span> {userData.login}
       </Box>
 
-      <Box sx={{ marginBottom: '1rem' }}>
-        <span>'profile picture'</span>
-        <Link
-          component="button"
-          onClick={() => setShowPicture(true)}
-          sx={{ marginLeft: '1rem', color: '#00ff00' }}
-        >
-          View Picture
-        </Link>
-        {getLogin() === userData.login && (
-          <Box sx={{ marginTop: '1rem' }}>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) =>
-                setNewPicture(e.target.files ? e.target.files[0] : null)
-              }
-              style={{ marginTop: '1rem' }}
-            />
-            <Button
-              onClick={handleImageChange}
-              disabled={!newPicture}
-              sx={{
-                marginTop: '1rem',
-                color: '#00ff00',
-                borderColor: '#00ff00',
-              }}
-              variant="outlined"
-            >
-              Update Picture
-            </Button>
-          </Box>
-        )}
+      <Box>
+        <Avatar
+          src={userData.picture}
+          alt="Profile"
+          style={{ width: '100px', height: '100px' }}
+        />
+        <>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) =>
+              setNewPicture(e.target.files ? e.target.files[0] : null)
+            }
+            style={{ marginTop: '1rem' }}
+          />
+          <Button
+            onClick={handleImageChange}
+            disabled={!newPicture}
+            style={{ marginTop: '1rem' }}
+          >
+            Update Picture
+          </Button>
+        </>
       </Box>
 
       <Box sx={{ marginBottom: '1rem' }}>

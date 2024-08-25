@@ -9,7 +9,7 @@ import Col from '../components/Col';
 const Profile = () => {
   return (
     <Col gap={'.5rem'} padding={'1rem'}>
-      <Typography variant="h3">User Profile</Typography>
+      {/* <Typography variant="h3">User Profile</Typography> */}
       <User />
       <AddFriend />
       <Friends />
